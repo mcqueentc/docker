@@ -1,5 +1,5 @@
 #OpenTSDB
-The container contains OpenTSDB basend on HBase and Hadoop
+The container contains OpenTSDB based on HBase and Hadoop
 
 ## Start the Container
 ```
