@@ -1,6 +1,15 @@
 FROM ubuntu
 MAINTAINER  Florian Lautenschlager florian.lautenschlager@qaware.de"
 
+# Install.
+RUN \
+  sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
+  apt-get update && \
+  apt-get -y upgrade && \
+  apt-get install -y software-properties-common && \
+  apt-get install -y unzip && \
+  rm -rf /var/lib/apt/lists/*
+
 #Install java 8
 RUN \
   echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
@@ -16,20 +25,28 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 #Define our constants
 ENV CHRONIX_VERSION 0.1.1
 ENV CHRONIX chronix-${CHRONIX_VERSION}
-ENV SOLR_INST_DIR /opt/${CHRONIX}
+ENV CHRONIX_INST_DIR /opt/${CHRONIX}
+ENV CHRONIX_DIR chronix-solr-5.4.0
+ENV CHRONIX_CONTENT_ROOT ${CHRONIX_INST_DIR}/${CHRONIX_DIR}
+ENV CHRONIX_BIN ${CHRONIX_CONTENT_ROOT}/bin
 
 #Make the installation layout
-RUN mkdir ${SOLR_INST_DIR}
+RUN mkdir ${CHRONIX_INST_DIR}
 
-RUN wget -nv -P ${SOLR_INST_DIR} https://github.com/ChronixDB/chronix.server/releases/download/v${CHRONIX_VERSION}/${CHRONIX}.zip \
-    && unzip ${SOLR_INST_DIR}/${CHRONIX}.zip -d /opt/${CHRONIX}
+RUN wget -nv -P ${CHRONIX_INST_DIR} https://github.com/ChronixDB/chronix.server/releases/download/v${CHRONIX_VERSION}/${CHRONIX}.zip \
+    && unzip ${CHRONIX_INST_DIR}/${CHRONIX}.zip -d ${CHRONIX_INST_DIR}
+
+#Delete the old zip
+RUN rm ${CHRONIX_INST_DIR}/${CHRONIX}.zip
 	
 #Delete the default data dir
-RUN rm /opt/${CHRONIX}/chronix-solr-5.4.0/server/solr/chronix/data -r
+RUN rm ${CHRONIX_CONTENT_ROOT}/server/solr/chronix/data -r
 	
 #Add our schema
-ADD misc/schema.xml /opt/${CHRONIX}/chronix-solr-5.4.0/server/solr/chronix/conf/schema.xml
+ADD misc/schema.xml ${CHRONIX_CONTENT_ROOT}/server/solr/chronix/conf/schema.xml
 
+#Set rights
+RUN chmod +x ${CHRONIX_BIN}/solr
 
 #Run solr in foreground (-f) - default port 8983
-CMD ["/opt/solr-5.2.1/bin/solr", "start", "-f"]
+CMD ["sh","-c","${CHRONIX_BIN}/solr start -f"]
