@@ -21,19 +21,12 @@
 -->
 <configuration>
     
-    <!-- local mode
-    <property>
-        <name>hbase.rootdir</name>
-        <value>file:///opt/data/hbase</value>
-    </property> -->
     
-    <property>
+    <!-- Hadoop needs to be installed-->
+   <property>
         <name>hbase.zookeeper.property.dataDir</name>
         <value>/opt/data/zookeeper</value>
     </property>
-
-    <!-- Distributed mode on one single node comment everything below -->
-    <!-- Hadoop needs to be installed-->
 
     <property>
         <name>hbase.cluster.distributed</name>

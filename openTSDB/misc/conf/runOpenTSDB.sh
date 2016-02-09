@@ -3,9 +3,15 @@
 echo "Starting Hadoop"
 nohup /usr/bin/nohup /etc/bootstrap.sh & 2> /dev/null
 
+echo "Sleeping 30 seconds"
+sleep 30
+
 echo "Starting Hbase"
 #Start hbase
-/opt/hbase-0.98.10.1-hadoop2/bin/start-hbase.sh
+/opt/hbase-1.0.3/bin/start-hbase.sh
+
+echo "Sleeping 30 seconds"
+sleep 30
 
 echo "Start tsd on port 4242"
 #start it again
