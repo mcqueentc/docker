@@ -8,3 +8,6 @@ The repository contains several dockerfiles with time series databases.
 
 # Usage
 See the README.md of the subdirectories.
+
+# Docker Hub
+All docker container are also available on [DockerHub](https://hub.docker.com/u/florianlautenschlager/)
