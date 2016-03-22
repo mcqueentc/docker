@@ -8,7 +8,7 @@ sleep 30
 
 echo "Starting Hbase"
 #Start hbase
-/opt/hbase-1.0.3/bin/start-hbase.sh
+/opt/hbase-1.1.3/bin/start-hbase.sh
 
 echo "Sleeping 30 seconds"
 sleep 30
