@@ -16,12 +16,12 @@ RUN dpkg -i kairosdb_1.1.1-1_all.deb
 RUN rm kairosdb_1.1.1-1_all.deb
 
 #Setting cassandra as storage
-ADD misc/kairosdb.properties /opt/kairosdb/conf/kairosdb.properties
+ADD kairosdb.properties /opt/kairosdb/conf/kairosdb.properties
 
-ADD misc/startKairosDB.sh /root/startKairosDB.sh
+ADD startKairosDB.sh /root/startKairosDB.sh
 RUN chmod 755 /root/startKairosDB.sh
 
-ADD misc/cassandra /etc/init.d/cassandra
+ADD cassandra /etc/init.d/cassandra
 RUN chmod +x /etc/init.d/cassandra
 
 CMD ["/root/startKairosDB.sh"]

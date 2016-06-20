@@ -4,7 +4,7 @@ MAINTAINER Florian Lautenschlager - florian.lautenschlager@qaware.de
 USER root
 
 #Override the hosts file
-ADD misc/hosts /tmp/hosts
+ADD hosts /tmp/hosts
 RUN cat /tmp/hosts > /etc/hosts
 
 RUN yum update -y && yum install -y wget zip unzip gnuplot curl which tar
@@ -36,8 +36,8 @@ RUN wget -O /opt/${HBASE_TAR} ${HBASE_DOWNLOAD_LINK} && tar xfz /opt/${HBASE_TAR
 RUN rm /opt/${HBASE_TAR}
 
 #Copy the configurations
-ADD /misc/conf/hbase-env.sh /${HBASE_INSTALL_DIR}/conf/hbase-env.sh
-ADD /misc/conf/hbase-site.xml /${HBASE_INSTALL_DIR}/conf/hbase-site.xml
+ADD hbase-env.sh /${HBASE_INSTALL_DIR}/conf/hbase-env.sh
+ADD hbase-site.xml /${HBASE_INSTALL_DIR}/conf/hbase-site.xml
 
 ##########################################################################
 #
@@ -59,7 +59,7 @@ ENV HBASE_HOME ${HBASE_INSTALL_DIR}
 
 #create a cache directory
 RUN mkdir /opt/tsdb-data/ && mkdir /opt/tsdb-data/cache
-ADD /misc/conf/opentsdb.conf /etc/opentsdb.conf
+ADD opentsdb.conf /etc/opentsdb.conf
 
 #Start hbase
 RUN /etc/bootstrap.sh \
@@ -69,7 +69,7 @@ RUN /etc/bootstrap.sh \
 && sleep 30 \
 && /usr/share/opentsdb/tools/create_table.sh
 
-ADD /misc/conf/runOpenTSDB.sh /opt/runOpenTSDB.sh
+ADD runOpenTSDB.sh /opt/runOpenTSDB.sh
 RUN chmod +x /usr/share/opentsdb/bin/tsdb
 RUN chmod +x /opt/runOpenTSDB.sh
 
