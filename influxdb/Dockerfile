@@ -8,9 +8,9 @@ RUN curl -s -o /tmp/influxdb_latest_amd64.deb https://s3.amazonaws.com/influxdb/
   rm /tmp/influxdb_latest_amd64.deb && \
   rm -rf /var/lib/apt/lists/*
 
-ADD types.db /usr/share/collectd/types.db
-ADD config.toml /config/config.toml
-ADD run.sh /run.sh
+ADD misc/types.db /usr/share/collectd/types.db
+ADD misc/config.toml /config/config.toml
+ADD misc/run.sh /run.sh
 RUN chmod +x /*.sh
 
 ENV PRE_CREATE_DB **None**

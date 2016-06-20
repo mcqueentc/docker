@@ -32,9 +32,8 @@ RUN pip install django==1.4\
 RUN git clone -b 0.9.15 https://github.com/graphite-project/graphite-web.git /usr/local/src/graphite-web
 WORKDIR /usr/local/src/graphite-web
 RUN python ./setup.py install
-ADD local_settings.py /opt/graphite/webapp/graphite/local_settings.py
-ADD *.*
-#ADD conf/graphite/ /opt/graphite/conf/
+ADD scripts/local_settings.py /opt/graphite/webapp/graphite/local_settings.py
+ADD conf/graphite/ /opt/graphite/conf/
 
 # install whisper
 RUN git clone -b 0.9.15 https://github.com/graphite-project/whisper.git /usr/local/src/whisper
@@ -48,20 +47,20 @@ RUN python ./setup.py install
 
 # config nginx
 RUN rm /etc/nginx/sites-enabled/default
-ADD nginx.conf /etc/nginx/nginx.conf
-ADD graphite.conf /etc/nginx/sites-available/graphite.conf
+ADD conf/nginx/nginx.conf /etc/nginx/nginx.conf
+ADD conf/nginx/graphite.conf /etc/nginx/sites-available/graphite.conf
 RUN ln -s /etc/nginx/sites-available/graphite.conf /etc/nginx/sites-enabled/graphite.conf
 
 ENV LANG="en_US.UTF-8"
 # init django admin
-ADD django_admin_init.exp /usr/local/bin/django_admin_init.exp
+ADD scripts/django_admin_init.exp /usr/local/bin/django_admin_init.exp
 RUN chmod 777 /usr/local/bin/django_admin_init.exp
 RUN /usr/local/bin/django_admin_init.exp
 
 # daemons
-ADD carbon.sh /etc/service/carbon/run
-ADD graphite.sh /etc/service/graphite/run
-ADD nginx.sh /etc/service/nginx/run
+ADD daemons/carbon.sh /etc/service/carbon/run
+ADD daemons/graphite.sh /etc/service/graphite/run
+ADD daemons/nginx.sh /etc/service/nginx/run
 
 RUN chmod 777 /etc/service/carbon/run /etc/service/graphite/run /etc/service/nginx/run
 

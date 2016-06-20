@@ -43,7 +43,7 @@ RUN rm ${CHRONIX_INST_DIR}/${CHRONIX}.zip
 RUN rm ${CHRONIX_CONTENT_ROOT}/server/solr/chronix/data -r
 	
 #Add our schema
-ADD schema.xml ${CHRONIX_CONTENT_ROOT}/server/solr/chronix/conf/schema.xml
+ADD misc/schema.xml ${CHRONIX_CONTENT_ROOT}/server/solr/chronix/conf/schema.xml
 
 #Set rights
 RUN chmod +x ${CHRONIX_BIN}/solr
