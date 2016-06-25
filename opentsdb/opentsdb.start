@@ -1,0 +1,1 @@
+docker run -d -h localHost -p 4242:4242 opentsdb
