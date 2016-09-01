@@ -23,17 +23,17 @@ RUN \
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 #Define our constants
-ENV CHRONIX_VERSION 0.1.3
+ENV CHRONIX_VERSION 0.3
 ENV CHRONIX chronix-${CHRONIX_VERSION}
 ENV CHRONIX_INST_DIR /opt/${CHRONIX}
-ENV CHRONIX_DIR chronix-solr-5.5.0
+ENV CHRONIX_DIR chronix-solr-6.1.0
 ENV CHRONIX_CONTENT_ROOT ${CHRONIX_INST_DIR}/${CHRONIX_DIR}
 ENV CHRONIX_BIN ${CHRONIX_CONTENT_ROOT}/bin
 
 #Make the installation layout
 RUN mkdir ${CHRONIX_INST_DIR}
 
-RUN wget -nv -P ${CHRONIX_INST_DIR} https://github.com/ChronixDB/chronix.server/releases/download/v${CHRONIX_VERSION}/${CHRONIX}.zip \
+RUN wget -nv -P ${CHRONIX_INST_DIR} https://github.com/ChronixDB/chronix.server/releases/download/${CHRONIX_VERSION}/${CHRONIX}.zip \
     && unzip ${CHRONIX_INST_DIR}/${CHRONIX}.zip -d ${CHRONIX_INST_DIR}
 
 #Delete the old zip
