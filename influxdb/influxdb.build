@@ -1,1 +1,1 @@
-docker build -t tutum/influxdb . 
+docker build -t influxdb . 

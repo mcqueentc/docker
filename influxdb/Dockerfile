@@ -1,34 +1,22 @@
-FROM tutum/curl:trusty
-MAINTAINER François-Guillaume Ribreau <docker@fgribreau.com>
+FROM buildpack-deps:jessie-curl
 
-# Install InfluxDB
-ENV INFLUXDB_VERSION 0.12.1-1
-RUN curl -s -o /tmp/influxdb_latest_amd64.deb https://s3.amazonaws.com/influxdb/influxdb_${INFLUXDB_VERSION}_amd64.deb && \
-  dpkg -i /tmp/influxdb_latest_amd64.deb && \
-  rm /tmp/influxdb_latest_amd64.deb && \
-  rm -rf /var/lib/apt/lists/*
+RUN gpg \
+    --keyserver hkp://ha.pool.sks-keyservers.net \
+    --recv-keys 05CE15085FC09D18E99EFB22684A14CF2582E0C5
 
-ADD misc/types.db /usr/share/collectd/types.db
-ADD misc/config.toml /config/config.toml
-ADD misc/run.sh /run.sh
-RUN chmod +x /*.sh
+ENV INFLUXDB_VERSION 0.13.0
+RUN wget -q https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_amd64.deb.asc && \
+    wget -q https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_amd64.deb && \
+    gpg --batch --verify influxdb_${INFLUXDB_VERSION}_amd64.deb.asc influxdb_${INFLUXDB_VERSION}_amd64.deb && \
+    dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && \
+    rm -f influxdb_${INFLUXDB_VERSION}_amd64.deb*
+COPY influxdb.conf /etc/influxdb/influxdb.conf
 
-ENV PRE_CREATE_DB **None**
-ENV SSL_SUPPORT **False**
-ENV SSL_CERT **None**
+EXPOSE 8083 8086
 
-# Admin server WebUI
-EXPOSE 8083
+VOLUME /var/lib/influxdb
 
-# HTTP API
-EXPOSE 8086
-
-# Raft port (for clustering, don't expose publicly!)
-#EXPOSE 8090
-
-# Protobuf port (for clustering, don't expose publicly!)
-#EXPOSE 8099
-
-VOLUME ["/data"]
-
-CMD ["/run.sh"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["influxd"]
