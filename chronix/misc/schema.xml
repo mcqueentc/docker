@@ -26,7 +26,7 @@
         <!-- Our special Meta data -->
         <field name="host" type="string" indexed="true" stored="true" required="false"/>
         <field name="process" type="string" indexed="true" stored="true" required="false"/>
-        <field name="group" type="string" indexed="true" stored="true" required="false"/>
+        <field name="metricGroup" type="string" indexed="true" stored="true" required="false"/>
         <field name="metric" type="string" indexed="true" stored="true" required="false"/>
 
         <field name="dataPointType" type="string" indexed="true" stored="true" required="false"/>
