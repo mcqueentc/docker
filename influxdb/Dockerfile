@@ -10,13 +10,13 @@ RUN wget -q https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERS
     gpg --batch --verify influxdb_${INFLUXDB_VERSION}_amd64.deb.asc influxdb_${INFLUXDB_VERSION}_amd64.deb && \
     dpkg -i influxdb_${INFLUXDB_VERSION}_amd64.deb && \
     rm -f influxdb_${INFLUXDB_VERSION}_amd64.deb*
-COPY influxdb.conf /etc/influxdb/influxdb.conf
+COPY misc/influxdb.conf /etc/influxdb/influxdb.conf
 
 EXPOSE 8083 8086
 
 VOLUME /var/lib/influxdb
 
-COPY entrypoint.sh /entrypoint.sh
+COPY misc/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["influxd"]
