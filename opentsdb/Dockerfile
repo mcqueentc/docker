@@ -61,6 +61,10 @@ ENV HBASE_HOME ${HBASE_INSTALL_DIR}
 RUN mkdir /opt/tsdb-data/ && mkdir /opt/tsdb-data/cache
 ADD /misc/conf/opentsdb.conf /etc/opentsdb.conf
 
+#timezone
+RUN mv /etc/localtime /etc/localtime.bak
+RUN ln -s /usr/share/zoneinfo/CET /etc/localtime
+
 #Start hbase
 RUN /etc/bootstrap.sh \
 && sleep 30 \
