@@ -61,6 +61,7 @@ ENV HBASE_HOME ${HBASE_INSTALL_DIR}
 RUN mkdir /opt/tsdb-data/ && mkdir /opt/tsdb-data/cache
 ADD /misc/conf/opentsdb.conf /etc/opentsdb.conf
 
+
 #timezone
 RUN mv /etc/localtime /etc/localtime.bak
 RUN ln -s /usr/share/zoneinfo/CET /etc/localtime
@@ -76,6 +77,8 @@ RUN /etc/bootstrap.sh \
 ADD /misc/conf/runOpenTSDB.sh /opt/runOpenTSDB.sh
 RUN chmod +x /usr/share/opentsdb/bin/tsdb
 RUN chmod +x /opt/runOpenTSDB.sh
+ADD /misc/cleanseDatabase.sh /opt/cleanseDatabase.sh
+RUN chmod +x /opt/cleanseDatabase.sh
 
 #Run open tsdb in foreground
 EXPOSE 4242

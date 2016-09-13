@@ -71,6 +71,11 @@ RUN apt-get clean\
 #do it, or graphite will crash
 RUN mkdir /var/log/graphite
 
+#add cleanse script
+ADD scripts/cleanseDatabase.sh /opt/graphite/bin/cleanseDatabase.sh
+RUN chmod +x /opt/graphite/bin/cleanseDatabase.sh
+
+
 # defaults
 EXPOSE 80:80 2003:2003
 VOLUME ["/opt/graphite", "/etc/nginx", "/var/log"]
