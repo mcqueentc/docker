@@ -79,6 +79,8 @@ RUN chmod +x /usr/share/opentsdb/bin/tsdb
 RUN chmod +x /opt/runOpenTSDB.sh
 ADD /misc/cleanseDatabase.sh /opt/cleanseDatabase.sh
 RUN chmod +x /opt/cleanseDatabase.sh
+ADD /misc/forceWritingOnDisk.sh /opt/forceWritingOnDisk.sh
+RUN chmod +x /opt/forceWritingOnDisk.sh
 
 #Run open tsdb in foreground
 EXPOSE 4242

@@ -23,5 +23,7 @@ RUN chmod 755 /root/startKairosDB.sh
 
 ADD misc/cassandra /etc/init.d/cassandra
 RUN chmod +x /etc/init.d/cassandra
+ADD misc/forceWritingOnDisk.sh /forceWritingOnDisk.sh
+RUN chmod +x /forceWritingOnDisk.sh
 
 CMD ["/root/startKairosDB.sh"]
