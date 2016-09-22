@@ -1,88 +1,79 @@
-FROM sequenceiq/hadoop-docker:2.7.1
-MAINTAINER Florian Lautenschlager - florian.lautenschlager@qaware.de
+FROM janeczku/alpine-kubernetes:3.2
 
-USER root
+RUN apk --update add \
+    rsyslog \
+    bash \
+    openjdk7 \
+    make \
+    wget \
+  && : adding gnuplot for graphing \
+  && apk add gnuplot \
+    --update-cache \
+    --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
 
-#Override the hosts file
-ADD misc/hosts /tmp/hosts
-RUN cat /tmp/hosts > /etc/hosts
-
-RUN yum update -y && yum install -y wget zip unzip gnuplot curl which tar
-
-##########################################################################
-#
-#
-# Hadoop
-#
-#
-##########################################################################
-ENV HOSTNAME localhost
-
-##########################################################################
-#
-#
-# HBase
-#
-#
-##########################################################################
-#Download hbase and extract it
+ENV TSDB_VERSION 2.2.0
 ENV HBASE_VERSION 1.1.3
-ENV HBASE_TAR hbase-${HBASE_VERSION}-bin.tar.gz
-ENV HBASE_DOWNLOAD_LINK https://archive.apache.org/dist/hbase/${HBASE_VERSION}/${HBASE_TAR}
-ENV HBASE_INSTALL_DIR /opt/hbase-${HBASE_VERSION}/
+ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
+ENV PATH $PATH:/usr/lib/jvm/java-1.7-openjdk/bin/
 
-RUN wget -O /opt/${HBASE_TAR} ${HBASE_DOWNLOAD_LINK} && tar xfz /opt/${HBASE_TAR} -C /opt
-#Remove the tar
-RUN rm /opt/${HBASE_TAR}
+RUN mkdir -p /opt/bin/
 
-#Copy the configurations
-ADD /misc/conf/hbase-env.sh /${HBASE_INSTALL_DIR}/conf/hbase-env.sh
-ADD /misc/conf/hbase-site.xml /${HBASE_INSTALL_DIR}/conf/hbase-site.xml
+RUN mkdir /opt/opentsdb/
+WORKDIR /opt/opentsdb/
+RUN apk --update add --virtual builddeps \
+    build-base \
+    autoconf \
+    automake \
+    git \
+    python \
+  && : Install OpenTSDB and scripts \
+  && wget --no-check-certificate \
+    -O v${TSDB_VERSION}.zip \
+    https://github.com/OpenTSDB/opentsdb/archive/v${TSDB_VERSION}.zip \
+  && unzip v${TSDB_VERSION}.zip \
+  && rm v${TSDB_VERSION}.zip \
+  && cd /opt/opentsdb/opentsdb-${TSDB_VERSION} \
+  && ./build.sh \
+  && : because of issue https://github.com/OpenTSDB/opentsdb/issues/707 \
+  && : commented lines do not work. These can be uncommeted when version of \
+  && : tsdb is bumped. Entrypoint will have to be updated too. \
+  && : cd build \
+  && : make install \
+  && : cd / \
+  && : rm -rf /opt/opentsdb/opentsdb-${TSDB_VERSION} \
+  && apk del builddeps \
+  && rm -rf /var/cache/apk/*
 
-##########################################################################
-#
-#
-# Open TSDB
-#
-#
-##########################################################################
+#Install HBase and scripts
+RUN mkdir -p /data/hbase /root/.profile.d /opt/downloads
 
-RUN mkdir /opt/opentsdb
-RUN wget -O /opt/opentsdb/opentsdb-2.2.0.noarch.rpm https://github.com/OpenTSDB/opentsdb/releases/download/v2.2.0/opentsdb-2.2.0.noarch.rpm
-RUN rpm -i /opt/opentsdb/opentsdb-2.2.0.noarch.rpm
+WORKDIR /opt/downloads
+RUN wget -O hbase-${HBASE_VERSION}.bin.tar.gz http://archive.apache.org/dist/hbase/1.1.3/hbase-1.1.3-bin.tar.gz && \
+    tar xzvf hbase-${HBASE_VERSION}.bin.tar.gz && \
+    mv hbase-${HBASE_VERSION} /opt/hbase && \
+    rm hbase-${HBASE_VERSION}.bin.tar.gz
 
-#Setup the base tables and the required variables
-#(NONE (default),LZO,GZIP,SNAPPY) .. ERROR: Compression GZIP is not supported. Use one of LZ4 SNAPPY LZO GZ NONE
+ADD docker/hbase-site.xml /opt/hbase/conf/
+ADD docker/start_opentsdb.sh /opt/bin/
+ADD docker/create_tsdb_tables.sh /opt/bin/
+ADD docker/start_hbase.sh /opt/bin/
 
-ENV COMPRESSION GZ
-ENV HBASE_HOME ${HBASE_INSTALL_DIR}
-
-#create a cache directory
-RUN mkdir /opt/tsdb-data/ && mkdir /opt/tsdb-data/cache
-ADD /misc/conf/opentsdb.conf /etc/opentsdb.conf
-
-
-#timezone
-RUN mv /etc/localtime /etc/localtime.bak
-RUN ln -s /usr/share/zoneinfo/CET /etc/localtime
-
-#Start hbase
-RUN /etc/bootstrap.sh \
-&& sleep 30 \
-&& jps \
-&& /usr/bin/nohup opt/hbase-1.1.3/bin/start-hbase.sh \
-&& sleep 30 \
-&& /usr/share/opentsdb/tools/create_table.sh
-
-ADD /misc/conf/runOpenTSDB.sh /opt/runOpenTSDB.sh
-RUN chmod +x /usr/share/opentsdb/bin/tsdb
-RUN chmod +x /opt/runOpenTSDB.sh
-ADD /misc/cleanseDatabase.sh /opt/cleanseDatabase.sh
-RUN chmod +x /opt/cleanseDatabase.sh
-ADD /misc/forceWritingOnDisk.sh /opt/forceWritingOnDisk.sh
+#Add own scripts (by mcqueen666)
+ADD misc/forceWritingOnDisk.sh /opt/forceWritingOnDisk.sh
+ADD misc/cleanseDatabase.sh /opt/cleanseDatabase.sh
 RUN chmod +x /opt/forceWritingOnDisk.sh
+RUN chmod +x /opt/cleanseDatabase.sh
 
-#Run open tsdb in foreground
-EXPOSE 4242
+RUN for i in /opt/bin/start_hbase.sh /opt/bin/start_opentsdb.sh /opt/bin/create_tsdb_tables.sh; \
+    do \
+        sed -i "s#::JAVA_HOME::#$JAVA_HOME#g; s#::PATH::#$PATH#g; s#::TSDB_VERSION::#$TSDB_VERSION#g;" $i; \
+    done
 
-CMD ["/opt/runOpenTSDB.sh"]
+
+RUN mkdir -p /etc/services.d/hbase /etc/services.d/tsdb
+RUN ln -s /opt/bin/start_hbase.sh /etc/services.d/hbase/run
+RUN ln -s /opt/bin/start_opentsdb.sh /etc/services.d/tsdb/run
+
+EXPOSE 60000 60010 60030 4242 16010
+
+VOLUME ["/data/hbase", "/tmp"]
