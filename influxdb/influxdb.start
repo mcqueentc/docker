@@ -1,1 +1,2 @@
-docker run -d -p 8083:8083 -p 8086:8086 influxdb
+# -v host/dir:/container/dir
+docker run -d -p 8083:8083 -p 8086:8086 -v /mnt/tsdb-benchmark-data/influxdb:/var --name influxdb influxdb

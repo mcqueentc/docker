@@ -1,1 +1,2 @@
-docker run -d -p 8080:8080 kairosdb
+# -v host/dir:/container/dir
+docker run -d -p 8080:8080 -v /mnt/tsdb-benchmark-data/kairosdb:/var --name kairosdb kairosdb

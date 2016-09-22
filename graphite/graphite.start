@@ -1,1 +1,2 @@
-docker run -d -p 80:80 -p 2003:2003 graphite
+# -v host/dir:/container/dir
+docker run -d -p 80:80 -p 2003:2003 -v /mnt/tsdb-benchmark-data/graphite:/opt --name graphite graphite

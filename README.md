@@ -9,7 +9,6 @@ The repository contains several dockerfiles with time series databases.
 An [overview](https://imagelayers.io/?images=florianlautenschlager%2Fkairosdb:v1,florianlautenschlager%2Fopentsdb:v1,florianlautenschlager%2Fchronix:v1,florianlautenschlager%2Fgraphite:v1,florianlautenschlager%2Finfluxdb:v1) of the images.
 
 # Usage
-See the README.md of the subdirectories.
+See the .start and .build files in the subdirectories.
 
-# Docker Hub
-All docker container are also available on [DockerHub](https://hub.docker.com/u/florianlautenschlager/)
+
