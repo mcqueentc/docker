@@ -1,2 +1,2 @@
 # -v host/dir:/container/dir
-docker run -d -p 8983:8983 /mnt/tsdb-benchmark-data/chronix:/opt/chronix-0.3/chronix-solr-6.1.0/server/solr/chronix/data --name chronix chronix
+docker run -d -p 8983:8983 -v /mnt/tsdb-benchmark-data/chronix:/opt/chronix-0.3/chronix-solr-6.1.0/server/solr/chronix/data --name chronix chronix

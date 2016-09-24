@@ -1,2 +1,2 @@
 # -v host/dir:/container/dir
-docker run -d -p 4242:4242 /mnt/tsdb-benchmark-data/opentsdb:/data/hbase --name opentsdb opentsdb
+docker run -d -p 4242:4242 -v /mnt/tsdb-benchmark-data/opentsdb:/data/hbase --name opentsdb opentsdb
