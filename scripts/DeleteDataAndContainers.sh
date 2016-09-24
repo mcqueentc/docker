@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 docker rm $(docker ps -a -q)
+docker volume rm $(docker volume ls -qf dangling=true)
 
 sudo rm -rf /mnt/tsdb-benchmark-data/graphite/
 sudo rm -rf /mnt/tsdb-benchmark-data/chronix/
