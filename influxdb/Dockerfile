@@ -14,7 +14,7 @@ COPY misc/influxdb.conf /etc/influxdb/influxdb.conf
 
 EXPOSE 8083 8086
 
-VOLUME /var/lib/influxdb
+VOLUME ["/var/lib/influxdb"]
 
 COPY misc/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

@@ -26,4 +26,6 @@ RUN chmod +x /etc/init.d/cassandra
 ADD misc/forceWritingOnDisk.sh /forceWritingOnDisk.sh
 RUN chmod +x /forceWritingOnDisk.sh
 
+VOLUME ["/var/lib/cassandra"]
+
 CMD ["/root/startKairosDB.sh"]

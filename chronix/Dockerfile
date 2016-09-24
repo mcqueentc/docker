@@ -48,5 +48,6 @@ ADD misc/schema.xml ${CHRONIX_CONTENT_ROOT}/server/solr/chronix/conf/schema.xml
 #Set rights
 RUN chmod +x ${CHRONIX_BIN}/solr
 
+VOLUME ["/opt/chronix-0.3/chronix-solr-6.1.0/server/solr/chronix/data"]
 #Run solr in foreground (-f) - default port 8983
 CMD ["sh","-c","${CHRONIX_BIN}/solr start -f"]
