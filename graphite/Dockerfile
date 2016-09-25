@@ -78,6 +78,6 @@ RUN chmod +x /opt/graphite/bin/cleanseDatabase.sh
 
 # defaults
 EXPOSE 80:80 2003:2003
-VOLUME ["/opt/graphite", "/etc/nginx", "/var/log"]
+VOLUME ["/opt/graphite/storage", "/etc/nginx", "/var/log"]
 ENV HOME /root
 CMD ["/sbin/my_init"]
