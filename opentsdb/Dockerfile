@@ -14,6 +14,7 @@ RUN apk --update add \
 ENV TSDB_VERSION 2.2.0
 ENV HBASE_VERSION 1.1.3
 ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
+ENV _JAVA_OPTIONS=-Xmx8g
 ENV PATH $PATH:/usr/lib/jvm/java-1.7-openjdk/bin/
 
 RUN mkdir -p /opt/bin/
@@ -66,7 +67,7 @@ RUN chmod +x /opt/cleanseDatabase.sh
 
 RUN for i in /opt/bin/start_hbase.sh /opt/bin/start_opentsdb.sh /opt/bin/create_tsdb_tables.sh; \
     do \
-        sed -i "s#::JAVA_HOME::#$JAVA_HOME#g; s#::PATH::#$PATH#g; s#::TSDB_VERSION::#$TSDB_VERSION#g;" $i; \
+        sed -i "s#::JAVA_HOME::#$JAVA_HOME#g; s#::_JAVA_OPTIONS::#$_JAVA_OPTIONS#g; s#::PATH::#$PATH#g; s#::TSDB_VERSION::#$TSDB_VERSION#g;" $i; \
     done
 
 
